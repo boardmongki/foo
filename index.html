@@ -54,11 +54,12 @@ body {
 
 .modal-content {
     position: relative;
-    text-align: center;
+    text-align: left; /* Align caption to left */
+    max-width: 90vw;
 }
 
-/* Animated border */
 .image-frame {
+    display: block; /* Ensure image is block */
     padding: 4px;
     border-radius: 12px;
     background: linear-gradient(
@@ -70,7 +71,7 @@ body {
     );
     background-size: 300% 300%;
     animation: borderMove 6s linear infinite;
-    display: inline-block;
+    margin-bottom: 10px; /* space below image for caption */
 }
 
 @keyframes borderMove {
@@ -79,7 +80,8 @@ body {
 }
 
 .modal img {
-    max-width: 85vw;
+    display: block;
+    max-width: 100%;
     max-height: 70vh;
     border-radius: 10px;
     cursor: zoom-in;
@@ -92,15 +94,17 @@ body {
 }
 
 .caption {
-    margin-top: 15px;
     font-size: 24px;
     font-weight: 700;
     letter-spacing: 1px;
     color: #fff;
-    display: inline-block;
+    display: block; /* force block to stay below image */
     padding: 6px 12px;
-    background: rgba(0,0,0,0.6); /* semi-transparent overlay */
+    background: rgba(0,0,0,0.6);
     border-radius: 8px;
+    width: fit-content; /* wrap content */
+    text-align: left;
+    margin-left: 0; /* align to left of modal content */
 }
 
 .arrow {
@@ -225,7 +229,7 @@ function closeModal(){
 function updateModal(){
     const img = images[currentIndex];
     modalImg.src = img.src;
-    caption.textContent = img.title; // Show title exactly
+    caption.textContent = img.title;
 }
 
 function nextImage(){
