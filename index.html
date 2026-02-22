@@ -2,37 +2,143 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Snowboard Catalog 2026</title>
+<title>Snowboard Collection</title>
 
 <style>
 body {
-    font-family: Arial, sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                 "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #ffffff;
+    color: #111;
+    margin: 20px;
 }
 
 .gallery {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
+    justify-content: center;
 }
 
 .gallery img {
     width: 220px;
     height: 400px;
     object-fit: cover;
-    transition: transform 0.3s ease;
-    transform-origin: center center;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: transform 0.2s ease;
 }
 
 .gallery img:hover {
-    transform: scale(1.5);
-    z-index: 10;
+    transform: scale(1.05);
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    z-index: 999;
+}
+
+.modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    position: relative;
+    text-align: center;
+}
+
+/* Animated border */
+.image-frame {
+    padding: 4px;
+    border-radius: 12px;
+    background: linear-gradient(
+        45deg,
+        #ff3c00,
+        #ffcc00,
+        #00e0ff,
+        #ff3c00
+    );
+    background-size: 300% 300%;
+    animation: borderMove 6s linear infinite;
+    display: inline-block;
+}
+
+@keyframes borderMove {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+.modal img {
+    max-width: 85vw;
+    max-height: 70vh;
+    border-radius: 10px;
+    cursor: zoom-in;
+    transition: transform 0.3s ease;
+}
+
+.modal img.zoomed {
+    transform: scale(2.2);
+    cursor: zoom-out;
+}
+
+.caption {
+    margin-top: 15px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #fff;
+    display: inline-block;
+    padding: 6px 12px;
+    background: rgba(0,0,0,0.6); /* semi-transparent overlay */
+    border-radius: 8px;
+}
+
+.arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+    padding: 15px;
+}
+
+.arrow.left { left: -60px; }
+.arrow.right { right: -60px; }
+
+.close-btn {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    font-size: 28px;
+    color: white;
+    cursor: pointer;
+}
+
+@media(max-width:768px){
+    .gallery img {
+        width: 45%;
+        height: auto;
+    }
+    .arrow.left { left: 10px; }
+    .arrow.right { right: 10px; }
 }
 </style>
-
 </head>
+
 <body>
 
-<h1>Snowboard Catalog 2026</h1>
+<h1>Snowboard Collection</h1>
 
 <div class="gallery">
 <img src="allian_backman_crayon.jpeg" title="Allian Backman Crayon 60">
@@ -79,6 +185,70 @@ body {
 <img src="sims_search_61.jpeg" title="Sims Search 61">
 <img src="sims_solace_144.jpeg" title="Sims Solace 144">
 </div>
+
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">✕</span>
+        <span class="arrow left" onclick="prevImage()">❮</span>
+        <div class="image-frame">
+            <img id="modalImg">
+        </div>
+        <span class="arrow right" onclick="nextImage()">❯</span>
+        <div class="caption" id="caption"></div>
+    </div>
+</div>
+
+<script>
+const images = document.querySelectorAll(".gallery img");
+const modal = document.getElementById("modal");
+const modalImg = document.getElementById("modalImg");
+const caption = document.getElementById("caption");
+let currentIndex = 0;
+
+images.forEach((img, index)=>{
+    img.addEventListener("click", ()=>{
+        currentIndex = index;
+        openModal();
+    });
+});
+
+function openModal(){
+    modal.classList.add("active");
+    updateModal();
+}
+
+function closeModal(){
+    modal.classList.remove("active");
+    modalImg.classList.remove("zoomed");
+}
+
+function updateModal(){
+    const img = images[currentIndex];
+    modalImg.src = img.src;
+    caption.textContent = img.title; // Show title exactly
+}
+
+function nextImage(){
+    currentIndex = (currentIndex + 1) % images.length;
+    updateModal();
+}
+
+function prevImage(){
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    updateModal();
+}
+
+modalImg.addEventListener("click", ()=>{
+    modalImg.classList.toggle("zoomed");
+});
+
+document.addEventListener("keydown", e=>{
+    if(!modal.classList.contains("active")) return;
+    if(e.key === "ArrowRight") nextImage();
+    if(e.key === "ArrowLeft") prevImage();
+    if(e.key === "Escape") closeModal();
+});
+</script>
 
 </body>
 </html>
